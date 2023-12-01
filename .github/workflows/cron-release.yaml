@@ -1,0 +1,47 @@
+name: Get latest release version
+
+on:
+  schedule:
+    - cron: "48 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-last-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch release version
+        id: fetchVersion
+        run: |
+          curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r ".tag_name" > llamafile-latest.txt
+          echo "releaseVersion=$(cat llamafile-latest.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Check for modified files
+        id: git-check
+        run: |
+          echo "modified=$(git status --porcelain | grep -q '.*' && echo true || echo false)"  >> "$GITHUB_OUTPUT"
+
+      - name: Bump version
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          sed -i "/RUN curl -L -o .\/llamafile-server/cRUN curl -L -o .\/llamafile-server https:\/\/github.com\/Mozilla-Ocho\/llamafile\/releases\/download\/${{ steps.fetchVersion.outputs.releaseVersion }}\/llamafile-server-${{ steps.fetchVersion.outputs.releaseVersion }}" Dockerfile.server
+
+      - name: Commit version bump
+        if: steps.git-check.outputs.modified == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "build: bump release version to ${{ steps.fetchVersion.outputs.releaseVersion }}"
+          commit_options: "-a"
+          commit_author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          tagging_message: "v${{ steps.fetchVersion.outputs.releaseVersion }}"
+
+      - name: Trigger release workflow
+        if: steps.git-check.outputs.modified == 'true'
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: release
