@@ -47,6 +47,8 @@ jobs:
           context: .
           file: ./Dockerfile.${{ matrix.component }}
           platforms: linux/amd64, linux/arm64, linux/arm/v7
+          provenance: true
+          sbom: true
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
