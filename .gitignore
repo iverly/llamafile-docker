@@ -1,0 +1,77 @@
+# Logs
+logs
+*.log
+
+## archives and compressed files
+*.7z
+*.jar
+*.rar
+*.zip
+*.gz
+*.bzip
+*.xz
+*.lzma
+*.tar
+*.tgz
+*.tar.gz
+*.iso
+*.dmg
+*.xpi
+*.gem
+*.egg
+*.deb
+*.rpm
+
+## common temp file patterns
+*~
+*.*~
+.#*
+\#*#
+.*.sw[a-z]
+
+## editors and ides
+
+### emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.elc
+auto-save-list
+tramp
+.\#*
+
+### vim
+*.un~
+Session.vim
+
+## os-specific noise files
+
+### linux flavors
+.directory
+
+### osx
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+### windows
+Desktop.ini
+$RECYCLE.BIN/
+Thumbs.db 
+
+## commonly used temp files and directories
+*.log
+*.pid
+log
+logs
+tmp
+temp
+
+## tags, gtags, etags, ctags
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+TAGS
