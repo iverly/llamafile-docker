@@ -15,7 +15,7 @@ WORKDIR /download
 RUN apt-get update && apt-get install -y curl
 
 # Download latest llamafile-server from github.
-RUN curl -L -o ./llamafile-server https://github.com/Mozilla-Ocho/llamafile/releases/download/0.2/llamafile-server-0.2
+RUN curl -L -o ./llamafile-server https://github.com/Mozilla-Ocho/llamafile/releases/download/0.2.1/llamafile-server-0.2.1
 
 # Make llamafile-server executable.
 RUN chmod +x ./llamafile-server
