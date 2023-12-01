@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1
+
+ARG DEBIAN_VERSION=bullseye
+
+################################################################################
+# Use debian image as downloader image for final stage.
+# https://hub.docker.com/_/debian
+################################################################################
+FROM debian:${DEBIAN_VERSION}-slim AS downloader
+
+# Set working directory.
+WORKDIR /download
+
+# Install curl.
+RUN apt-get update && apt-get install -y curl
+
+# Download latest llamafile-server from github.
+RUN curl -L -o ./llamafile-server https://github.com/Mozilla-Ocho/llamafile/releases/download/0.1/llamafile-server-0.1
+
+# Make llamafile-server executable.
+RUN chmod +x ./llamafile-server
+
+################################################################################
+# Use scratch image as final image.
+# https://hub.docker.com/_/scratch
+################################################################################
+FROM debian:${DEBIAN_VERSION}-slim AS final
+
+# Create user to run llamafile-server as non-root.
+RUN addgroup --gid 1000 user
+RUN adduser --uid 1000 --gid 1000 --disabled-password --gecos "" user
+
+# Switch to user.
+USER user
+
+# Set working directory.
+WORKDIR /usr/src/app
+
+# Copy llamafile-server from downloader image.
+COPY --from=downloader /download/llamafile-server ./llamafile-server
+
+# Expose 8080 port.
+EXPOSE 8080
+
+# Set entrypoint.
+ENTRYPOINT ["/bin/sh", "/usr/src/app/llamafile-server", "--host", "0.0.0.0"]
