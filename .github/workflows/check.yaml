@@ -1,0 +1,26 @@
+name: Check
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, synchronize]
+
+jobs:
+  conventional-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Install dependencies
+        run: npm install @commitlint/config-conventional
+      - name: Configure commitlint
+        run: |
+          echo "module.exports = {extends: ['@commitlint/config-conventional']};" > commitlint.config.js
+      - name: Run commitlint
+        uses: wagoid/commitlint-github-action@v5
+        env:
+          NODE_PATH: ${{ github.workspace }}/node_modules
