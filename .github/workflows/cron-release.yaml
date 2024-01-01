@@ -22,18 +22,19 @@ jobs:
           echo "releaseVersion=$(cat llamafile-latest.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Check for modified files
+        if: steps.fetchVersion.outputs.releaseVersion != 'null'
         id: git-check
         run: |
           echo "modified=$(git status --porcelain | grep -q '.*' && echo true || echo false)"  >> "$GITHUB_OUTPUT"
 
       - name: Bump version
-        if: steps.git-check.outputs.modified == 'true'
+        if: steps.git-check.outputs.modified == 'true' && steps.fetchVersion.outputs.releaseVersion != 'null'
         run: |
           sed -i "/RUN curl -L -o .\/llamafile-server/cRUN curl -L -o .\/llamafile-server https:\/\/github.com\/Mozilla-Ocho\/llamafile\/releases\/download\/${{ steps.fetchVersion.outputs.releaseVersion }}\/llamafile-server-${{ steps.fetchVersion.outputs.releaseVersion }}" Dockerfile.server
           sed -i "/RUN curl -L -o .\/llamafile-main/cRUN curl -L -o .\/llamafile-main https:\/\/github.com\/Mozilla-Ocho\/llamafile\/releases\/download\/${{ steps.fetchVersion.outputs.releaseVersion }}\/llamafile-main-${{ steps.fetchVersion.outputs.releaseVersion }}" Dockerfile.main
 
       - name: Commit version bump
-        if: steps.git-check.outputs.modified == 'true'
+        if: steps.git-check.outputs.modified == 'true' && steps.fetchVersion.outputs.releaseVersion != 'null'
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "build: bump release version to ${{ steps.fetchVersion.outputs.releaseVersion }}"
@@ -42,7 +43,7 @@ jobs:
           tagging_message: "v${{ steps.fetchVersion.outputs.releaseVersion }}"
 
       - name: Trigger release workflow
-        if: steps.git-check.outputs.modified == 'true'
+        if: steps.git-check.outputs.modified == 'true' && steps.fetchVersion.outputs.releaseVersion != 'null'
         uses: peter-evans/repository-dispatch@v2
         with:
           event-type: release
