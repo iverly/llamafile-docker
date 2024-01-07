@@ -14,19 +14,19 @@ WORKDIR /download
 # Install curl.
 RUN apt-get update && apt-get install -y curl
 
-# Download latest llamafile-server from github.
-RUN curl -L -o ./llamafile-server https://github.com/Mozilla-Ocho/llamafile/releases/download/0.5/llamafile-server-0.5
+# Download latest llamafile from github.
+RUN curl -L -o ./llamafile https://github.com/Mozilla-Ocho/llamafile/releases/download/0.5/llamafile-0.5
 
-# Make llamafile-server executable.
-RUN chmod +x ./llamafile-server
+# Make llamafile executable.
+RUN chmod +x ./llamafile
 
 ################################################################################
-# Use scratch image as final image.
-# https://hub.docker.com/_/scratch
+# Use debian image as final image.
+# https://hub.docker.com/_/debian
 ################################################################################
 FROM debian:${DEBIAN_VERSION}-slim AS final
 
-# Create user to run llamafile-server as non-root.
+# Create user to run llamafile as non-root.
 RUN addgroup --gid 1000 user
 RUN adduser --uid 1000 --gid 1000 --disabled-password --gecos "" user
 
@@ -36,11 +36,14 @@ USER user
 # Set working directory.
 WORKDIR /usr/src/app
 
-# Copy llamafile-server from downloader image.
-COPY --from=downloader /download/llamafile-server ./llamafile-server
+# Copy llamafile from downloader image.
+COPY --from=downloader /download/llamafile ./llamafile
 
 # Expose 8080 port.
 EXPOSE 8080
 
 # Set entrypoint.
-ENTRYPOINT ["/bin/sh", "/usr/src/app/llamafile-server", "--host", "0.0.0.0"]
+ENTRYPOINT ["/bin/sh", "/usr/src/app/llamafile"]
+
+# Set default command.
+CMD ["--server", "--host", "0.0.0.0", "-m", "/model"]

@@ -9,13 +9,9 @@ permissions:
 
 jobs:
   docker:
-    name: docker-${{ matrix.component }}
-    strategy:
-      fail-fast: false
-      matrix:
-        component: ["server", "main"]
+    name: docker
     concurrency:
-      group: "docker-${{ matrix.component }}"
+      group: docker
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
@@ -43,9 +39,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: iverly/llamafile-docker:${{ matrix.component }}-latest,iverly/llamafile-docker:${{ matrix.component }}-${{ steps.fetchVersion.outputs.releaseVersion }}
+          tags: iverly/llamafile-docker:latest,iverly/llamafile-docker:${{ steps.fetchVersion.outputs.releaseVersion }}
           context: .
-          file: ./Dockerfile.${{ matrix.component }}
+          file: ./Dockerfile
           platforms: linux/amd64, linux/arm64, linux/arm/v7
           provenance: true
           sbom: true
