@@ -20,6 +20,7 @@ Please refer to the [llamafile](https://github.com/Mozilla-Ocho/llamafile) docum
 
 ```bash
 docker run -it --rm \
+-p 8080:8080 \
 -v /path/to/gguf/model:/model \
 iverly/llamafile-docker:latest
 ```
