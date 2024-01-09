@@ -15,7 +15,7 @@ WORKDIR /download
 RUN apt-get update && apt-get install -y curl
 
 # Download latest llamafile from github.
-RUN curl -L -o ./llamafile https://github.com/Mozilla-Ocho/llamafile/releases/download/0.5/llamafile-0.5
+RUN curl -L -o ./llamafile https://github.com/Mozilla-Ocho/llamafile/releases/download/0.6/llamafile-0.6
 
 # Make llamafile executable.
 RUN chmod +x ./llamafile
