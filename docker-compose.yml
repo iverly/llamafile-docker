@@ -1,8 +1,9 @@
 services:
   llamafile-docker:
     image: iverly/llamafile-docker:latest
-    container-name: llamafile
+    container_name: llamafile
     ports:
-      8080:8080
+      - 8080:8080
     volumes:
       - /path/to/gguf/model:/model
+    restart: unless-stopped
